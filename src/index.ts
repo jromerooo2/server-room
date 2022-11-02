@@ -8,14 +8,32 @@ const server = app.listen(3000, () => {
 });
 
 const io = new Server(server);
-
+const nsp = io.of('/dummy');
 
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
 
+
+//connection for the room
+nsp.on('connection', (socket: Socket) => {
+    console.log('Connected to dummy namespace');
+    socket.emit('success', "hello is this working?");
+    
+    socket.on('execute', (data:string)=>{
+        console.log(data);
+    })
+    
+    socket.on('disconnect', () => {
+        console.log('Client disconnected');
+    });
+})
+
+
+//connection for everyone else
 io.on('connection', (socket: Socket) => {
-    socket.emit('success', 1);
+    console.log('New client connected');
+    socket.emit('success', "hello is this working?");
     socket.on('disconnect', () => {
         console.log('Client disconnected');
     });
